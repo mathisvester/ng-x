@@ -1,0 +1,17 @@
+<form (ngSubmit)="formSubmit.emit({ email, password, name })">
+  <input type="email" name="email" placeholder="Email" [(ngModel)]="email" />
+  <input
+    type="password"
+    name="password "
+    placeholder="Password"
+    [(ngModel)]="password" />
+  @if (mode === 'registration') {
+    <input type="text" name="name" placeholder="Name" [(ngModel)]="name" />
+  }
+
+  @if (mode === 'registration') {
+    <button>Register</button>
+  } @else {
+    <button>Login</button>
+  }
+</form>

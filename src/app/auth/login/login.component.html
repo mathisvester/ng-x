@@ -1,0 +1,7 @@
+<app-auth-form
+  (formSubmit)="
+    authStore.login$.next({ email: $event.email, password: $event.password })
+  "></app-auth-form>
+<p>
+  Don't have an account yet? <a [routerLink]="['/registration']">Register</a>
+</p>

@@ -1,0 +1,5 @@
+@if (authStore.user$ | async; as loggedInUser) {
+  <p>
+    {{ loggedInUser ? 'Logged in as ' + loggedInUser.name : 'Not logged in' }}
+  </p>
+}
