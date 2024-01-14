@@ -17,8 +17,7 @@ export class AuthService {
 
   register(email: string, password: string, name: string) {
     return from(account.create(ID.unique(), email, password, name)).pipe(
-      concatMap(() => this.login(email, password)),
-      tap(() => this.router.navigate(['/home']))
+      concatMap(() => this.login(email, password))
     );
   }
 
