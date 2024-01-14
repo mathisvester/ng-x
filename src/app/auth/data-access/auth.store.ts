@@ -1,6 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { Models } from 'appwrite';
-import { Source, toSource } from '@state-adapt/rxjs';
+import {
+  Source,
+  splitRequestSources,
+  toRequestSource,
+  toSource,
+} from '@state-adapt/rxjs';
 import { concatMap } from 'rxjs';
 import { adapt } from '@state-adapt/angular';
 import { authAdapter } from './auth.adapter';
@@ -8,10 +13,12 @@ import { AuthService } from './auth.service';
 
 export interface AuthState {
   user: Models.User<any> | null;
+  error: any;
 }
 
 export const initialState: AuthState = {
   user: null,
+  error: null,
 };
 
 @Injectable({ providedIn: 'root' })
@@ -25,36 +32,56 @@ export class AuthStore {
     name: string;
   }>('[Auth] Register');
   readonly logout$ = new Source<void>('[Auth] Logout');
+  readonly loginLeave$ = new Source<void>('[Login] Leave');
+  readonly registrationLeave$ = new Source<void>('[Registration] Leave');
 
   private readonly authService = inject(AuthService);
 
   private readonly accountCreateEmailSession$ = this.login$.pipe(
     concatMap(({ payload }) =>
-      this.authService.login(payload.email, payload.password)
-    ),
-    toSource('[Auth API] Login success')
+      this.authService
+        .login(payload.email, payload.password)
+        .pipe(toRequestSource('[Auth API] Login'))
+    )
   );
 
   private readonly accountCreate$ = this.register$.pipe(
     concatMap(({ payload }) =>
-      this.authService.register(payload.email, payload.password, payload.name)
-    ),
-    toSource('[Auth API] Registration success')
+      this.authService
+        .register(payload.email, payload.password, payload.name)
+        .pipe(toRequestSource('[Auth API] Registration'))
+    )
   );
 
   private readonly accountDeleteSession$ = this.logout$.pipe(
     concatMap(() => this.authService.logout()),
-    toSource('[Auth] Logout success')
+    toSource('[Auth] Logout')
   );
 
   private store = adapt(initialState, {
     adapter: authAdapter,
-    sources: {
-      loginSuccess: this.accountCreateEmailSession$,
-      registrationSuccess: this.accountCreate$,
-      logoutSuccess: this.accountDeleteSession$,
+    sources: () => {
+      const { success$: loginSuccess$, error$: loginFailed$ } =
+        splitRequestSources(
+          '[Auth API] Login',
+          this.accountCreateEmailSession$
+        );
+
+      const { success$: registrationSuccess$, error$: registrationFailed$ } =
+        splitRequestSources('[Auth API] Registration', this.accountCreate$);
+
+      return {
+        loginSuccess: loginSuccess$,
+        loginFailed: loginFailed$,
+        registrationSuccess: registrationSuccess$,
+        registrationFailed: registrationFailed$,
+        logout: this.accountDeleteSession$,
+        loginLeave: this.loginLeave$,
+        registrationLeave: this.registrationLeave$,
+      };
     },
   });
 
   readonly user$ = this.store.user$;
+  readonly error$ = this.store.error$;
 }

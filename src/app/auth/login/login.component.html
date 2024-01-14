@@ -1,3 +1,6 @@
+@if (authStore.error$ | async) {
+  <p>{{ 'Login failed!' }}</p>
+}
 <app-auth-form
   (formSubmit)="
     authStore.login$.next({ email: $event.email, password: $event.password })

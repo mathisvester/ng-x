@@ -1,3 +1,6 @@
+@if (authStore.error$ | async) {
+  <p>{{ 'Registration failed!' }}</p>
+}
 <app-auth-form
   [mode]="'registration'"
   (formSubmit)="
