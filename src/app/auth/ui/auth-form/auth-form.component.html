@@ -1,17 +1,43 @@
-<form (ngSubmit)="formSubmit.emit({ email, password, name })">
-  <input type="email" name="email" placeholder="Email" [(ngModel)]="email" />
-  <input
-    type="password"
-    name="password "
-    placeholder="Password"
-    [(ngModel)]="password" />
+<form (ngSubmit)="formSubmit.emit({ email, password, name })" #f="ngForm">
+  <fieldset>
+    <label for="email">Email</label>
+    <input
+      type="email"
+      name="email"
+      id="email"
+      placeholder="Email"
+      autocomplete="email"
+      [(ngModel)]="email"
+      required />
+  </fieldset>
+  <fieldset>
+    <label for="password">Password</label>
+    <input
+      type="password"
+      name="password"
+      id="password"
+      placeholder="Password"
+      [autocomplete]="
+        mode === 'registration' ? 'new-password' : 'current-password'
+      "
+      [(ngModel)]="password"
+      required />
+  </fieldset>
   @if (mode === 'registration') {
-    <input type="text" name="name" placeholder="Name" [(ngModel)]="name" />
+    <fieldset>
+      <label for="name">Name</label>
+      <input
+        type="text"
+        name="name"
+        id="name"
+        placeholder="Name"
+        autocomplete="cc-name"
+        [(ngModel)]="name" />
+    </fieldset>
   }
-
   @if (mode === 'registration') {
-    <button>Register</button>
+    <button [disabled]="!f.valid">Register</button>
   } @else {
-    <button>Login</button>
+    <button [disabled]="!f.valid">Login</button>
   }
 </form>

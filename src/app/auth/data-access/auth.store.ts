@@ -33,8 +33,10 @@ export class AuthStore {
     name: string;
   }>('[Auth] Register');
   readonly logout$ = new Source<void>('[Auth] Logout');
-  readonly loginLeave$ = routeLeave('/login').pipe(toSource('[Login] Leave'));
-  readonly registrationLeave$ = routeLeave('/registration').pipe(
+  private readonly loginLeave$ = routeLeave('/login').pipe(
+    toSource('[Login] Leave')
+  );
+  private readonly registrationLeave$ = routeLeave('/registration').pipe(
     toSource('[Registration] Leave')
   );
 
