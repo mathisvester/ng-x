@@ -3,10 +3,10 @@ import { inject } from '@angular/core';
 import { EMPTY, filter, iif, of, pairwise, switchMap } from 'rxjs';
 
 /**
- * An Observable that emits an event when routing from a specified URL to another.
+ * An Observable that emits an event when a specified route did leave.
  * @param {string} url The URL to watch.
  */
-export function fromRouteToAnother(url: string) {
+export function routeDidLeave(url: string) {
   return inject(Router).events.pipe(
     filter(e => e instanceof NavigationEnd),
     pairwise(),

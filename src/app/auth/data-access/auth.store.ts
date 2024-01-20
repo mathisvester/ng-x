@@ -10,7 +10,7 @@ import { concatMap } from 'rxjs';
 import { adapt } from '@state-adapt/angular';
 import { authAdapter } from './auth.adapter';
 import { AuthService } from './auth.service';
-import { fromRouteToAnother } from '../../shared/util/from-route-to-another';
+import { routeDidLeave } from '../../shared/util/route-did-leave';
 
 export interface AuthState {
   user: Models.User<any> | null;
@@ -33,12 +33,12 @@ export class AuthStore {
     name: string;
   }>('[Auth] Register');
   readonly logout$ = new Source<void>('[Auth] Logout');
-  private readonly loginLeave$ = fromRouteToAnother('/login').pipe(
+  private readonly loginLeave$ = routeDidLeave('/login').pipe(
     toSource('[Login] Leave')
   );
-  private readonly registrationLeave$ = fromRouteToAnother(
-    '/registration'
-  ).pipe(toSource('[Registration] Leave'));
+  private readonly registrationLeave$ = routeDidLeave('/registration').pipe(
+    toSource('[Registration] Leave')
+  );
 
   private readonly authService = inject(AuthService);
 
