@@ -1,6 +1,7 @@
 import { createAdapter } from '@state-adapt/core';
 import { Models } from 'appwrite';
 import { AuthState } from './auth.store';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export const authAdapter = createAdapter<AuthState>()({
   loginSuccess: (state, user: Models.User<any>) => ({
@@ -8,7 +9,7 @@ export const authAdapter = createAdapter<AuthState>()({
     user,
     error: null,
   }),
-  loginFailed: (state, error: any) => ({
+  loginFailed: (state, error: HttpErrorResponse) => ({
     ...state,
     error,
   }),
@@ -17,7 +18,7 @@ export const authAdapter = createAdapter<AuthState>()({
     user,
     error: null,
   }),
-  registrationFailed: (state, error: any) => ({
+  registrationFailed: (state, error: HttpErrorResponse) => ({
     ...state,
     error,
   }),

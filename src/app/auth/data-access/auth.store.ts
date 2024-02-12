@@ -6,15 +6,17 @@ import {
   toRequestSource,
   toSource,
 } from '@state-adapt/rxjs';
-import { concatMap } from 'rxjs';
+import { concatMap, Observable } from 'rxjs';
 import { adapt } from '@state-adapt/angular';
 import { authAdapter } from './auth.adapter';
 import { AuthService } from './auth.service';
 import { routeDidLeave } from '../../shared/util/route-did-leave';
+import { Action } from '@state-adapt/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface AuthState {
   user: Models.User<any> | null;
-  error: any;
+  error: HttpErrorResponse | null;
 }
 
 export const initialState: AuthState = {
@@ -77,9 +79,13 @@ export class AuthStore {
 
       return {
         loginSuccess: loginSuccess$,
-        loginFailed: loginFailed$,
+        loginFailed: loginFailed$ as Observable<
+          Action<HttpErrorResponse, '[Auth API] Login.error$'>
+        >,
         registrationSuccess: registrationSuccess$,
-        registrationFailed: registrationFailed$,
+        registrationFailed: registrationFailed$ as Observable<
+          Action<HttpErrorResponse, '[Auth API] Registration.error$'>
+        >,
         logout: this.accountDeleteSession$,
         loginLeave: this.loginLeave$,
         registrationLeave: this.registrationLeave$,
